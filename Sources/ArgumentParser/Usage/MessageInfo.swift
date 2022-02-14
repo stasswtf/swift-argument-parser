@@ -80,7 +80,8 @@ enum MessageInfo {
       if !usage.isEmpty {
         usage += "\n"
       }
-      usage += "  See '\(commandNames) \(helpName.synopsisString)' for more information."
+      // MARK: Help message for errors
+      usage += "See '\(commandNames) \(helpName.synopsisString)' for more information.\n"
     }
     
     // Parsing errors and user-thrown validation errors have the usage

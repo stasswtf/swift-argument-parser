@@ -39,6 +39,9 @@ public struct CommandConfiguration {
   /// display.
   public var discussion: String
   
+  /// Footer for this command.
+  public var footer: String
+
   /// Version information for this command.
   public var version: String
 
@@ -85,6 +88,7 @@ public struct CommandConfiguration {
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
+    footer: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
@@ -95,6 +99,7 @@ public struct CommandConfiguration {
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
+    self.footer = footer
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
@@ -110,6 +115,7 @@ public struct CommandConfiguration {
     abstract: String = "",
     usage: String? = nil,
     discussion: String = "",
+    footer: String = "",
     version: String = "",
     shouldDisplay: Bool = true,
     subcommands: [ParsableCommand.Type] = [],
@@ -121,6 +127,7 @@ public struct CommandConfiguration {
     self.abstract = abstract
     self.usage = usage
     self.discussion = discussion
+    self.footer = footer
     self.version = version
     self.shouldDisplay = shouldDisplay
     self.subcommands = subcommands
@@ -135,6 +142,7 @@ extension CommandConfiguration {
     commandName: String?,
     abstract: String,
     discussion: String,
+    footer: String,
     version: String,
     shouldDisplay: Bool,
     subcommands: [ParsableCommand.Type],
@@ -146,6 +154,7 @@ extension CommandConfiguration {
       abstract: abstract,
       usage: "",
       discussion: discussion,
+	  footer: footer,
       version: version,
       shouldDisplay: shouldDisplay,
       subcommands: subcommands,

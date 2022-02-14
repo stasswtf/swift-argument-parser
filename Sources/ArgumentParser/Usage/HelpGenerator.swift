@@ -10,8 +10,10 @@
 //===----------------------------------------------------------------------===//
 
 internal struct HelpGenerator {
-  static var helpIndent = 2
-  static var labelColumnWidth = 26
+  // MARK: Indent
+  static var helpIndent = 4
+  // MARK: Label column width
+  static var labelColumnWidth = 8
   static var systemScreenWidth: Int { _terminalSize().width }
 
   struct Section {
@@ -28,9 +30,10 @@ internal struct HelpGenerator {
         let paddedLabel = self.paddedLabel
         let wrappedAbstract = self.abstract
           .wrapped(to: screenWidth, wrappingIndent: HelpGenerator.labelColumnWidth)
+        // MARK: Discussion indent
         let wrappedDiscussion = self.discussion.isEmpty
           ? ""
-          : self.discussion.wrapped(to: screenWidth, wrappingIndent: HelpGenerator.helpIndent * 4) + "\n"
+          : self.discussion.wrapped(to: screenWidth, wrappingIndent: 8) + "\n"
         let renderedAbstract: String = {
           guard !abstract.isEmpty else { return "" }
           if paddedLabel.count < HelpGenerator.labelColumnWidth {
@@ -71,9 +74,10 @@ internal struct HelpGenerator {
     
     func rendered(screenWidth: Int) -> String {
       guard !elements.isEmpty else { return "" }
-      
-      let renderedElements = elements.map { $0.rendered(screenWidth: screenWidth) }.joined()
-      return "\(String(describing: header).uppercased()):\n"
+
+      // MARK: Rendered section & elements
+      let renderedElements = elements.map { $0.rendered(screenWidth: screenWidth) }.joined(separator: "\n")
+      return "\(String(describing: header).uppercased())\n\n"
         + renderedElements
     }
   }
@@ -88,7 +92,8 @@ internal struct HelpGenerator {
   var usage: String
   var sections: [Section]
   var discussionSections: [DiscussionSection]
-  
+  var footer: String
+
   init(commandStack: [ParsableCommand.Type], visibility: ArgumentVisibility) {
     guard let currentCommand = commandStack.last else {
       fatalError()
@@ -125,6 +130,8 @@ internal struct HelpGenerator {
 
     self.sections = HelpGenerator.generateSections(commandStack: commandStack, visibility: visibility)
     self.discussionSections = []
+
+    self.footer = currentCommand.configuration.footer
   }
   
   init(_ type: ParsableArguments.Type, visibility: ArgumentVisibility) {
@@ -158,8 +165,9 @@ internal struct HelpGenerator {
           .map { $0.synopsisForHelp }
           .joined(separator: "/")
 
+        // MARK: Default value
         let defaultValue = arg.help.defaultValue
-          .map { "(default: \($0))" } ?? ""
+          .map { "\nDefault: \($0)." } ?? ""
 
         let descriptionString = groupedArgs
           .lazy
@@ -174,7 +182,8 @@ internal struct HelpGenerator {
       } else {
         synopsis = arg.synopsisForHelp
 
-        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "(default: \($0))" }
+        // MARK: Default value
+        let defaultValue = arg.help.defaultValue.flatMap { $0.isEmpty ? nil : "\nDefault: \($0)." }
         description = [arg.help.abstract, defaultValue]
           .lazy
           .compactMap { $0 }
@@ -212,7 +221,8 @@ internal struct HelpGenerator {
   
   func usageMessage() -> String {
     guard !usage.isEmpty else { return "" }
-    return "Usage: \(usage.hangingIndentingEachLine(by: 7))"
+    // MARK: Usage for errors
+    return "\nUSAGE\n\n\(usage.indentingEachLine(by: 4))\n"
   }
   
   var includesSubcommands: Bool {
@@ -227,9 +237,10 @@ internal struct HelpGenerator {
       .map { $0.rendered(screenWidth: screenWidth) }
       .filter { !$0.isEmpty }
       .joined(separator: "\n")
+    // MARK: Rendered abstract
     let renderedAbstract = abstract.isEmpty
       ? ""
-      : "OVERVIEW: \(abstract)".wrapped(to: screenWidth) + "\n\n"
+      : "\(abstract.wrapped(to: screenWidth))\n\n"
     
     var helpSubcommandMessage = ""
     if includesSubcommands {
@@ -239,20 +250,27 @@ internal struct HelpGenerator {
       }
       names.insert("help", at: 1)
 
+      // MARK: Subcommand help message for errors
       helpSubcommandMessage = """
 
-          See '\(names.joined(separator: " ")) <subcommand>' for detailed help.
+        See '\(names.joined(separator: " ")) <subcommand>' for detailed help.
         """
     }
-    
+
+    // MARK: Rendered usage
     let renderedUsage = usage.isEmpty
       ? ""
-      : "USAGE: \(usage.hangingIndentingEachLine(by: 7))\n\n"
-    
+      : "USAGE\n\n\(usage.indentingEachLine(by: 4))\n\n"
+
+    // MARK: Rendered footer
+    let renderedFooter = footer.isEmpty
+      ? ""
+      : "\n" + "\(footer)".wrapped(to: screenWidth) + "\n"
+
     return """
     \(renderedAbstract)\
     \(renderedUsage)\
-    \(renderedSections)\(helpSubcommandMessage)
+    \(renderedSections)\(helpSubcommandMessage)\(renderedFooter)
     """
   }
 }
