@@ -111,7 +111,7 @@ extension ArgumentDefinition {
   var synopsis: String {
     var synopsis = unadornedSynopsis
     if help.options.contains(.isRepeating) {
-      synopsis += " ..."
+      synopsis += " …"
     }
     if help.options.contains(.isOptional) {
       synopsis = "[\(synopsis)]"
@@ -188,9 +188,9 @@ extension ErrorMessageGenerator {
     case .unableToParseValue(let o, let n, let v, forKey: let k, originalError: let e):
       return unableToParseValueMessage(origin: o, name: n, value: v, key: k, error: e)
     case .invalidOption(let str):
-      return "Invalid option: \(str)"
+      return "Invalid option: \(str)."
     case .nonAlphanumericShortOption(let c):
-      return "Invalid option: -\(c)"
+      return "Invalid option: -\(c)."
     case .missingSubcommand:
       return "Missing required subcommand."
     case .userValidationError(let error):
@@ -271,7 +271,7 @@ extension ErrorMessageGenerator {
 
   func unknownOptionMessage(origin: InputOrigin.Element, name: Name) -> String {
     if case .short = name {
-      return "Unknown option '\(name.synopsisString)'"
+      return "Unknown option '\(name.synopsisString)'."
     }
     
     // An empirically derived magic number
@@ -295,14 +295,14 @@ extension ErrorMessageGenerator {
     if let suggestion = suggestion {
       return "Unknown option '\(name.synopsisString)'. Did you mean '\(suggestion.synopsisString)'?"
     }
-    return "Unknown option '\(name.synopsisString)'"
+    return "Unknown option '\(name.synopsisString)'."
   }
   
   func missingValueForOptionMessage(origin: InputOrigin, name: Name) -> String {
     if let valueName = valueName(for: name) {
-      return "Missing value for '\(name.synopsisString) <\(valueName)>'"
+      return "Missing value for '\(name.synopsisString) <\(valueName)>'."
     } else {
-      return "Missing value for '\(name.synopsisString)'"
+      return "Missing value for '\(name.synopsisString)'."
     }
   }
   
@@ -315,10 +315,10 @@ extension ErrorMessageGenerator {
     case 0:
       return nil
     case 1:
-      return "Unexpected argument '\(values.first!.1)'"
+      return "Unexpected argument '\(values.first!.1)'."
     default:
       let v = values.map { $0.1 }.joined(separator: "', '")
-      return "\(values.count) unexpected arguments: '\(v)'"
+      return "\(values.count) unexpected arguments: '\(v)'."
     }
   }
   
@@ -338,7 +338,7 @@ extension ErrorMessageGenerator {
     let origString = elementString(previous, arguments) ?? "position \(previous)"
 
     //TODO: review this message once environment values are supported.
-    return "Value to be set with \(dupeString) had already been set with \(origString)"
+    return "Value to be set with \(dupeString) had already been set with \(origString)."
   }
   
   func noValueMessage(key: InputKey) -> String? {
@@ -352,10 +352,10 @@ extension ErrorMessageGenerator {
     case 0:
       return "No value set for non-argument var \(key). Replace with a static variable, or let constant."
     case 1:
-      return "Missing expected argument '\(possibilities.first!)'"
+      return "Missing expected argument '\(possibilities.first!)'."
     default:
       let p = possibilities.joined(separator: "', '")
-      return "Missing one of: '\(p)'"
+      return "Missing one of: '\(p)'."
     }
   }
   
@@ -414,13 +414,13 @@ extension ErrorMessageGenerator {
 
     switch (name, valueName) {
     case let (n?, v?):
-      return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'\(customErrorMessage)"
+      return "The value '\(value)' is invalid for '\(n.synopsisString) <\(v)>'\(customErrorMessage)."
     case let (_, v?):
-      return "The value '\(value)' is invalid for '<\(v)>'\(customErrorMessage)"
+      return "The value '\(value)' is invalid for '<\(v)>'\(customErrorMessage)."
     case let (n?, _):
-      return "The value '\(value)' is invalid for '\(n.synopsisString)'\(customErrorMessage)"
+      return "The value '\(value)' is invalid for '\(n.synopsisString)'\(customErrorMessage)."
     case (nil, nil):
-      return "The value '\(value)' is invalid.\(customErrorMessage)"
+      return "The value '\(value)' is invalid\(customErrorMessage)."
     }
   }
 }
